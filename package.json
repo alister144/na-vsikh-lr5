@@ -1,0 +1,10 @@
+{
+  "name": "na-vsikh",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node src/build.mjs",
+    "dev": "node src/serve.mjs",
+    "test": "node --test"
+  }
+}
