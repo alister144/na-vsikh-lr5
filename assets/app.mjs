@@ -19,13 +19,23 @@ const assets=base+'assets/';
 const toast=document.getElementById('toast');
 const view=document.getElementById('view');
 const storageKey='na-vsikh-v1';
+const previousMakiNames=['Огірок і кунжут','Cucumber & Sesame'];
+const maki=initial.find(p=>p.id==='r7');
 let savedNotice='';
 function load(fallback){
  try{
    const raw=localStorage.getItem(storageKey);
    if(raw){
      const data=JSON.parse(raw);
-     if(Array.isArray(data.menu)&&data.cart&&['pickup','delivery'].includes(data.method))return data;
+     if(Array.isArray(data.menu)&&data.cart&&['pickup','delivery'].includes(data.method)){
+       const savedMaki=data.menu.find(p=>p.id===maki.id);
+       if(savedMaki){
+         for(const field of ['name','alt']){
+           savedMaki[field]=savedMaki[field].map((text,i)=>text===previousMakiNames[i]?maki[field][i]:text);
+         }
+       }
+       return data;
+     }
    }
  }catch {savedNotice=t('storage');if(fallback)return fallback;}
  return {menu:initial,cart:{},method:'delivery'};
