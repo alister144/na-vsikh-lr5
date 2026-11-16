@@ -36,7 +36,6 @@ p{line-height:1.55}
 .basket{border:1px solid var(--rule);padding:0 11px}
 .basket svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.55}
 .basket strong{color:var(--red);font-size:.92em}
-.project-line{border-top:1px solid var(--rule);color:var(--dim);font-size:.74rem;line-height:1.4;letter-spacing:.025em;padding:7px 0;background:#efe8dc}
 .footer{border-top:1px solid var(--rule);background:#efe8dc}
 .footer-inner{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:26px;padding-block:30px}
 .footer-inner>span,.footer-inner>div{font-size:.85rem}
@@ -90,7 +89,6 @@ legend{font-weight:650;font-size:.84rem;margin-bottom:7px}
 .menu-tabs button[aria-pressed=true]{border-color:var(--red);color:var(--red)}
 .finder{background:#efe8dc;border:1px solid var(--rule);padding:clamp(16px,3vw,28px);margin-bottom:27px}
 .finder-head{margin-bottom:16px}
-.finder-head p{font-size:.88rem;color:var(--dim);margin-top:4px}
 .finder-fields,.admin-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 label:has(select),label:has(input:not([type=checkbox],[type=radio])),label:has(textarea){font-size:.88rem;font-weight:650}
 .finder-fields label,.editor label:not(.tick),.checkout>label,.line-qty label{display:grid;gap:5px}
@@ -158,7 +156,7 @@ dialog p,dialog .cart-summary{margin-block:12px}
 #toast{position:fixed;z-index:6;bottom:16px;right:16px;max-width:min(420px,calc(100% - 32px));padding:12px 16px;background:var(--ink);color:var(--white);pointer-events:none;opacity:0;font-size:.9rem}
 #toast.show{opacity:1}
 @media(max-width:1020px){.frame{width:calc(100% - 46px)}.hero{gap:25px}.grid{gap:13px}.quick{gap:8px}.segments span{width:32px}}
-@media(max-width:760px){.frame{width:calc(100% - 32px)}.top{grid-template-columns:1fr auto;gap:0;min-height:auto;padding-top:12px}.main-nav{grid-row:2;grid-column:1/-1;width:100%;margin-top:10px;min-height:43px;justify-content:space-between;gap:8px;font-size:.79rem;border-top:1px solid var(--rule)}.tools{grid-row:1;grid-column:2}.project-line{font-size:.68rem}.hero{grid-template-columns:1fr;padding-block:22px 25px;gap:14px}.hero h1{font-size:clamp(3rem,12vw,5rem)}.hero-copy{padding-block:0}.hero-fig img{aspect-ratio:1.49}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.section{padding-block:32px 50px}.footer-inner{grid-template-columns:auto 1fr;gap:15px;padding-block:21px}.footer-inner>div{grid-column:1/-1}.detail,.cart-layout{grid-template-columns:1fr;gap:20px}.detail-img{max-width:600px}.detail .buy{max-width:460px}}
+@media(max-width:760px){.frame{width:calc(100% - 32px)}.top{grid-template-columns:1fr auto;gap:0;min-height:auto;padding-top:12px}.main-nav{grid-row:2;grid-column:1/-1;width:100%;margin-top:10px;min-height:43px;justify-content:space-between;gap:8px;font-size:.79rem;border-top:1px solid var(--rule)}.tools{grid-row:1;grid-column:2}.hero{grid-template-columns:1fr;padding-block:22px 25px;gap:14px}.hero h1{font-size:clamp(3rem,12vw,5rem)}.hero-copy{padding-block:0}.hero-fig img{aspect-ratio:1.49}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.section{padding-block:32px 50px}.footer-inner{grid-template-columns:auto 1fr;gap:15px;padding-block:21px}.footer-inner>div{grid-column:1/-1}.detail,.cart-layout{grid-template-columns:1fr;gap:20px}.detail-img{max-width:600px}.detail .buy{max-width:460px}}
 @media(max-width:460px){.grid{gap:9px}.rec-grid{grid-template-columns:1fr}.product-copy{padding:9px;gap:6px}.product-copy h3{font-size:1.09rem}.product-copy .buy{align-items:stretch;flex-direction:column;gap:5px}.product-copy p{font-size:.79rem}.finder-fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.finder-fields label:last-child{grid-column:1/-1}.sort{font-size:.72rem!important;white-space:normal;display:grid;gap:2px}.sort select{width:100%;max-width:153px;font-size:.78rem}.menu-tabs button{font-size:.85rem;padding-inline:8px}.cart-lines li{grid-template-columns:60px 1fr 73px;gap:7px}.admin-list li{grid-template-columns:62px 1fr}.admin-actions{grid-column:2}.editor .admin-fields{grid-template-columns:1fr}.section-head{align-items:start}}
 .qty-buttons{display:flex;gap:4px;margin-top:4px}
 .qty-buttons button{width:50%;background:var(--white);border:1px solid var(--rule);font-weight:750}
