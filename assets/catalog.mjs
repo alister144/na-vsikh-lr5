@@ -10,7 +10,7 @@ export const initial=[
  roll('r4',['Макі з авокадо','Avocado Maki'],['Авокадо, рис і тонкий лист норі.','Avocado, rice and a thin sheet of nori.'],149,180,false,'rice nori avocado'),
  roll('r5',['Запечений лосось','Baked Salmon'],['Лосось і крем-сир під золотистою шапочкою.','Salmon and cream cheese with a golden baked top.'],329,300,true,'rice nori salmon cheese'),
  roll('r6',['Запечений шиїтаке','Baked Shiitake'],['Шиїтаке та тофу із запеченою верхівкою.','Shiitake and tofu with a baked topping.'],229,260,true,'rice nori shiitake tofu soy'),
- roll('r7',['Огірок і кунжут','Cucumber & Sesame'],['Хрусткий огірок і підсмажений кунжут.','Crisp cucumber with toasted sesame.'],119,195,false,'rice nori cucumber sesame'),
+ roll('r7',['Макі з огірком і кунжутом','Cucumber & Sesame Maki'],['Хрусткий огірок і підсмажений кунжут.','Crisp cucumber with toasted sesame.'],119,195,false,'rice nori cucumber sesame'),
  roll('r8',['Хрусткий рол із куркою','Crispy Chicken Roll'],['Курка в панко з огірком і крем-сиром.','Panko chicken, cucumber and cream cheese.'],239,260,false,'rice nori chicken panko cucumber cheese'),
  set('s1',['Риба й авокадо','Salmon & Avocado'],['Філадельфія з лососем і легкі макі з авокадо.','Salmon Philadelphia and light avocado maki.'],459,'r1 r4'),
  set('s2',['До вечері','Dinner Set'],['Лосось, креветка й авокадо — три різні роли на одному столі.','Salmon, shrimp and avocado — three different rolls to share.'],719,'r1 r3 r4'),
