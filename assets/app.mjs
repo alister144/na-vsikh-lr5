@@ -1,6 +1,7 @@
 import {initial, ingredients, describe, matches, recommend, portions, cartTotals} from './catalog.mjs';
 import {pair} from './words.mjs';
 import {mountAdmin} from './admin.mjs';
+import {readSavedState} from './storage.mjs';
 const uk=document.documentElement.lang==='uk';
 const lang=uk?'uk':'en';
 const n=uk?0:1;
@@ -26,8 +27,8 @@ function load(fallback){
  try{
    const raw=localStorage.getItem(storageKey);
    if(raw){
-     const data=JSON.parse(raw);
-     if(Array.isArray(data.menu)&&data.cart&&['pickup','delivery'].includes(data.method)){
+     const data=readSavedState(JSON.parse(raw));
+     if(data){
        const savedMaki=data.menu.find(p=>p.id===maki.id);
        if(savedMaki){
          for(const field of ['name','alt']){

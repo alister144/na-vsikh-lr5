@@ -50,7 +50,7 @@ export function mountAdmin({view,t,L,esc,heading,money,img,say,menu,products,upd
    const baseline=JSON.stringify(p);
    editing=p?structuredClone(p):{id:'local-'+crypto.randomUUID(),kind:'roll',price:'',grams:'',pieces:8,baked:false,img:'',recipe:[],parts:{},name:['',''],desc:['',''],alt:['','']};
    view.innerHTML=heading(id?t('edit'):t('newItem'),t('local'))+'<form id="editor" class="editor"><div class="admin-fields">'+field('productType','<select name="kind"'+(id?' disabled':'')+'><option value="roll">'+t('roll')+'</option><option value="set"'+(editing.kind==='set'?' selected':'')+'>'+t('set')+'</option></select>')+
-   field('price','<input name="price" type="number" min="1" max="100000" step="1" required value="'+editing.price+'">')+
+   field('price','<input name="price" type="number" min="1" max="100000" step="1" required>')+
    ['name','description','alt'].map((label)=>['UA','EN'].map((code,i)=>{
      const key=label==='description'?'desc':label;
      return '<label>'+t(label)+' · '+code+(label==='description'?'<textarea name="'+key+i+'" required maxlength="500">'+esc(editing[key][i])+'</textarea>':'<input name="'+key+i+'" required maxlength="120" value="'+esc(editing[key][i])+'">')+'</label>';
@@ -58,6 +58,7 @@ export function mountAdmin({view,t,L,esc,heading,money,img,say,menu,products,upd
    field('photo','<select name="photo"><option value="">'+t('selectPhoto')+'</option>'+samplePhotos.map((src,i)=>'<option value="'+src+'"'+(editing.img===src?' selected':'')+'>'+esc(L(initial[i].name))+'</option>').join('')+'</select>')+
    '<label>'+yn('Завантажити фото','Upload photo')+'<input name="upload" type="file" accept="image/jpeg,image/png,image/webp"></label></div><div id="photo-preview"></div><div id="recipe-area"></div><p class="form-status" role="status"></p><div class="admin-toolbar"><button class="primary">'+t('save')+'</button><button type="button" class="outline" id="cancel">'+t('cancel')+'</button></div></form>';
    const form=view.querySelector('#editor');
+   form.elements.price.value=editing.price;
    const status=form.querySelector('.form-status');
    const preview=form.querySelector('#photo-preview');
    let pending=false;
@@ -121,12 +122,15 @@ export function mountAdmin({view,t,L,esc,heading,money,img,say,menu,products,upd
  function renderRecipe(){
    const zone=view.querySelector('#recipe-area');
    if(editing.kind==='roll'){
-     zone.innerHTML='<div class="admin-fields metrics">'+field('weight','<input type="number" name="grams" value="'+editing.grams+'" min="1" max="30000" required>')+field('pieces','<input type="number" name="pieces" value="'+editing.pieces+'" min="1" max="300" required>')+'<label class="tick"><input type="checkbox" name="baked"'+(editing.baked?' checked':'')+'> '+t('baked')+'</label></div><h2>'+t('prep')+'</h2><div class="recipe-rows">'+editing.recipe.map((row,i)=>{
+     zone.innerHTML='<div class="admin-fields metrics">'+field('weight','<input type="number" name="grams" min="1" max="30000" required>')+field('pieces','<input type="number" name="pieces" min="1" max="300" required>')+'<label class="tick"><input type="checkbox" name="baked"'+(editing.baked?' checked':'')+'> '+t('baked')+'</label></div><h2>'+t('prep')+'</h2><div class="recipe-rows">'+editing.recipe.map((row,i)=>{
        const opts=Object.entries(ingredients).map(([key,val])=>'<option value="'+key+'"'+(key===row.key?' selected':'')+'>'+esc(L(val))+'</option>').join('');
        return '<div class="recipe-row"><select data-ing="'+i+'" aria-label="'+t('prep')+' '+(i+1)+'">'+opts+'</select>'+(ingredients[row.key][3]==='fish'?'<label class="tick"><input data-raw="'+i+'" type="checkbox"'+(row.raw?' checked':'')+'> '+t('rawFlag')+'</label>':'')+'<button type="button" class="outline" data-cut="'+i+'">'+t('remove')+'</button></div>';
      }).join('')+'</div><button type="button" class="outline" id="add-row">'+t('addIngredient')+'</button>';
-     zone.querySelector('[name="grams"]').addEventListener('input',e=>editing.grams=e.target.value);
-     zone.querySelector('[name="pieces"]').addEventListener('input',e=>editing.pieces=e.target.value);
+     for(const key of ['grams','pieces']){
+       const input=zone.querySelector('[name="'+key+'"]');
+       input.value=editing[key];
+       input.addEventListener('input',()=>editing[key]=input.value);
+     }
      zone.querySelector('[name="baked"]').addEventListener('change',e=>editing.baked=e.target.checked);
      zone.querySelectorAll('[data-ing]').forEach(el=>el.addEventListener('change',()=>{editing.recipe[el.dataset.ing]={key:el.value,raw:false};renderRecipe();zone.querySelector('[data-ing="'+el.dataset.ing+'"]')?.focus();}));
      zone.querySelectorAll('[data-raw]').forEach(el=>el.addEventListener('change',()=>editing.recipe[el.dataset.raw].raw=el.checked));
