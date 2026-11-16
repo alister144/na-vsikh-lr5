@@ -101,13 +101,16 @@ let filters;
 function parseFilters(){
  const q=new URLSearchParams(location.search);
  const allowed=(key,values,fallback)=>values.includes(q.get(key))?q.get(key):fallback;
- return {category:allowed('category',['all','sets','rolls','baked'],'all'),people:Number(allowed('people',['1','2','3','4','5'],'2')),active:q.has('people'),portion:allowed('portion',Object.keys(portions),'dinner'),plant:q.get('plant')==='1'||q.get('pref')==='plant',pref:allowed('pref',['salmon','shrimp'],''),baked:q.get('baked')==='1',mild:q.get('spicy')==='no',noRaw:q.get('rawfish')==='no',sort:allowed('sort',['usual','low','high'],'usual')};
+ const legacyBaked=q.get('category')==='baked';
+ const category=legacyBaked?'rolls':allowed('category',['all','sets','rolls'],'all');
+ return {category,rollType:category==='rolls'&&(legacyBaked||q.get('rollType')==='baked')?'baked':'allRolls',people:Number(allowed('people',['1','2','3','4','5'],'2')),active:q.has('people'),portion:allowed('portion',Object.keys(portions),'dinner'),plant:q.get('plant')==='1'||q.get('pref')==='plant',pref:allowed('pref',['salmon','shrimp'],''),baked:q.get('baked')==='1',mild:q.get('spicy')==='no',noRaw:q.get('rawfish')==='no',sort:allowed('sort',['usual','low','high'],'usual')};
 }
 function filterURL(){
  const f=filters;
  const url=new URL(location.href);
- for(const k of ['category','people','portion','baked','spicy','rawfish','plant','pref','sort'])url.searchParams.delete(k);
+ for(const k of ['category','rollType','people','portion','baked','spicy','rawfish','plant','pref','sort'])url.searchParams.delete(k);
  if(f.category!=='all')url.searchParams.set('category',f.category);
+ if(f.category==='rolls'&&f.rollType==='baked')url.searchParams.set('rollType','baked');
  if(f.active){url.searchParams.set('people',f.people);url.searchParams.set('portion',f.portion);}
  if(f.baked)url.searchParams.set('baked','1');
  if(f.mild)url.searchParams.set('spicy','no');
@@ -121,10 +124,11 @@ function filterURL(){
 function renderMenu(){
  const f=filters=parseFilters();
  if(f.plant)f.pref='';
- if(new URLSearchParams(location.search).get('pref')==='plant')filterURL();
+ const params=new URLSearchParams(location.search);
+ if(params.get('pref')==='plant'||params.get('category')==='baked')filterURL();
  view.innerHTML=heading(t('menu'))+
- '<div class="menu-tabs" aria-label="'+t('menu')+'">'+['all','sets','rolls','baked'].map(k=>'<button type="button" data-category="'+k+'" aria-pressed="'+(f.category===k)+'">'+t(k)+'</button>').join('')+
- '</div><form class="finder" id="filters"><div class="finder-head"><h2>'+t('finder')+'</h2></div><div class="finder-fields"><label>'+t('people')+'<select name="people">'+options(['1','2','3','4','5'],String(f.people),x=>x)+'</select></label><label>'+t('portion')+'<select name="portion">'+options(Object.keys(portions),f.portion,k=>t(k)+' · '+portions[k]+' '+t('g'))+'</select></label><label>'+t('pref')+'<select name="pref"'+(f.plant?' disabled':'')+'><option value="">'+t('any')+'</option>'+options(['salmon','shrimp'],f.pref,k=>L(ingredients[k]))+'</select></label></div><div class="finder-bottom"><fieldset class="checks" aria-label="'+t('requirements')+'">'+check('baked',t('onlyBaked'),f.baked)+check('mild',t('mild'),f.mild)+check('noRaw',t('noRaw'),f.noRaw)+check('plant',t('plantOnly'),f.plant)+'</fieldset><button class="primary">'+t('finder')+' <span aria-hidden="true">↗</span></button></div></form><section id="recommendations" class="recs" aria-live="polite"></section><section class="listing"><div class="section-head"><h2 id="category-title">'+t(f.category)+'</h2><label class="sort">'+t('sort')+' <select id="sort">'+options(['usual','low','high'],f.sort)+'</select></label></div><div id="products" class="grid"></div></section>';
+ '<div class="menu-tabs" aria-label="'+t('menu')+'">'+['all','sets','rolls'].map(k=>'<button type="button" data-category="'+k+'" aria-pressed="'+(f.category===k)+'">'+t(k)+'</button>').join('')+
+ '</div><form class="finder" id="filters"><div class="finder-head"><h2>'+t('finder')+'</h2></div><div class="finder-fields"><label>'+t('people')+'<select name="people">'+options(['1','2','3','4','5'],String(f.people),x=>x)+'</select></label><label>'+t('portion')+'<select name="portion">'+options(Object.keys(portions),f.portion,k=>t(k)+' · '+portions[k]+' '+t('g'))+'</select></label><label>'+t('pref')+'<select name="pref"'+(f.plant?' disabled':'')+'><option value="">'+t('any')+'</option>'+options(['salmon','shrimp'],f.pref,k=>L(ingredients[k]))+'</select></label></div><div class="finder-bottom"><fieldset class="checks" aria-label="'+t('requirements')+'">'+check('baked',t('onlyBaked'),f.baked)+check('mild',t('mild'),f.mild)+check('noRaw',t('noRaw'),f.noRaw)+check('plant',t('plantOnly'),f.plant)+'</fieldset><button class="primary">'+t('finder')+' <span aria-hidden="true">↗</span></button></div></form><section id="recommendations" class="recs" aria-live="polite"></section><section class="listing"><div class="section-head"><h2 id="category-title">'+t(f.category)+'</h2><label class="sort">'+t('sort')+' <select id="sort">'+options(['usual','low','high'],f.sort)+'</select></label></div><div class="roll-types" aria-label="'+t('rollTypes')+'" hidden>'+['allRolls','baked'].map(k=>'<button type="button" data-roll-type="'+k+'" aria-pressed="'+(f.rollType===k)+'">'+t(k)+'</button>').join('')+'</div><div id="products" class="grid"></div></section>';
  const form=document.getElementById('filters');
  function update(activate=false){
    const data=new FormData(form);
@@ -143,7 +147,12 @@ function renderMenu(){
  document.getElementById('sort').addEventListener('change',e=>{f.sort=e.target.value;filterURL();menuResults();});
  view.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',()=>{
    f.category=b.dataset.category;
+   if(f.category!=='rolls')f.rollType='allRolls';
    view.querySelectorAll('[data-category]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+   filterURL();menuResults();
+ }));
+ view.querySelectorAll('[data-roll-type]').forEach(b=>b.addEventListener('click',()=>{
+   f.rollType=b.dataset.rollType;
    filterURL();menuResults();
  }));
  menuResults();
@@ -151,9 +160,11 @@ function renderMenu(){
 function menuResults(){
  const f=filters;
  const products=[...menu.values()];
- let listed=products.filter(p=>matches(p,f)&&(f.category==='all'||(f.category==='sets'&&p.kind==='set')||(f.category==='rolls'&&p.kind==='roll')||(f.category==='baked'&&p.baked)));
+ let listed=products.filter(p=>matches(p,f)&&(f.category==='all'||(f.category==='sets'&&p.kind==='set')||(f.category==='rolls'&&p.kind==='roll'&&(f.rollType!=='baked'||p.baked))));
  if(f.sort!=='usual')listed.sort((a,b)=>(a.price-b.price)*(f.sort==='low'?1:-1));
  document.getElementById('category-title').textContent=t(f.category);
+ view.querySelector('.roll-types').hidden=f.category!=='rolls';
+ view.querySelectorAll('[data-roll-type]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.rollType===f.rollType));
  document.getElementById('products').innerHTML=listed.map(card).join('')||'<p class="empty">'+t('none')+'</p>';
  const recommendations=document.getElementById('recommendations');
  if(!f.active){recommendations.innerHTML='';return;}
@@ -225,12 +236,17 @@ function render(){
  if(page==='item')renderItem();
  if(page==='cart')renderCart();
  if(page==='home'){
-   document.getElementById('featured').innerHTML=['s2','s3','s6'].map(id=>menu.get(id)).filter(Boolean).map(card).join('')||[...menu.values()].filter(p=>p.kind==='set').slice(0,3).map(card).join('')||'<p class="dim">'+t('unavailable')+'</p>';
-   const label=document.querySelector('.hero-fig figcaption');
+   const featuredCards=(id,kind,ids)=>{
+     const picks=ids.map(key=>menu.get(key)).filter(Boolean);
+     const others=[...menu.values()].filter(p=>p.kind===kind&&!ids.includes(p.id));
+     document.getElementById(id).innerHTML=[...picks,...others].slice(0,3).map(card).join('')||'<p class="dim">'+t('unavailable')+'</p>';
+   };
+   featuredCards('featured','set',['s2','s3','s6']);
+   featuredCards('featured-rolls','roll',['r1','r5','r4']);
    const featured=menu.get('s6');
-   const link=label.querySelector('a');
+   const link=document.querySelector('.hero-fig a');
    link.href=featured?href(featured):route('menu/');
-   link.textContent=(featured?L(featured.name):t('all'))+' ↗';
+   link.setAttribute('aria-label',featured?tr('Переглянути сет «'+L(featured.name)+'»','View '+L(featured.name)):t('all'));
  }
 }
 document.addEventListener('click',e=>{
